@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyChat — Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base:    #0f1117;
+            --bg-surface: #181c27;
+            --bg-raised:  #1e2235;
+            --border:     #252a3e;
+            --accent:     #f0a500;
+            --accent-dim: #f0a50018;
+            --text-primary: #eef0f8;
+            --text-muted:   #7a80a0;
+            --text-faint:   #3e4460;
+            --red:          #f05252;
+            --green:        #3ecf74;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            background: var(--bg-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--text-faint) 1px, transparent 1px),
+                linear-gradient(90deg, var(--text-faint) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.07;
+            pointer-events: none;
+        }
+
+        /* ambient glow */
+        body::after {
+            content: '';
+            position: fixed;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(240,165,0,0.07) 0%, transparent 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .card {
+            position: relative;
+            z-index: 1;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 44px 40px 36px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03);
+            animation: fadeUp 0.4s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 32px;
+        }
+
+        .brand-icon {
+            width: 36px; height: 36px;
+            background: var(--accent-dim);
+            border: 1.5px solid var(--accent);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+
+        .brand-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -.01em;
+        }
+
+        .brand-tag {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .heading {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            letter-spacing: -.02em;
+        }
+
+        .subheading {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            margin-bottom: 7px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-faint);
+            display: flex;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        input {
+            width: 100%;
+            background: var(--bg-raised);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 11px 14px 11px 38px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input::placeholder { color: var(--text-faint); }
+
+        input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(240,165,0,0.1);
+        }
+
+        input:focus + .focus-ring { display: block; }
+
+        /* shake on error */
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20%      { transform: translateX(-6px); }
+            40%      { transform: translateX(6px); }
+            60%      { transform: translateX(-4px); }
+            80%      { transform: translateX(4px); }
+        }
+        .shake { animation: shake 0.35s ease; }
+
+        .field.has-error input {
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(240,82,82,0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            margin-top: 8px;
+            padding: 13px;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f1117;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .submit-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+        .submit-btn:active { transform: translateY(0) scale(0.98); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* spinner */
+        .spinner {
+            width: 15px; height: 15px;
+            border: 2px solid rgba(15,17,23,0.3);
+            border-top-color: #0f1117;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-box {
+            display: none;
+            margin-top: 16px;
+            padding: 11px 14px;
+            background: rgba(240,82,82,0.1);
+            border: 1px solid rgba(240,82,82,0.25);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--red);
+            line-height: 1.4;
+        }
+        .error-box.visible { display: flex; align-items: flex-start; gap: 8px; }
+
+        .divider {
+            margin: 24px 0 0;
+            border: none;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-note {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-faint);
+        }
+
+        @media (max-width: 480px) {
+            body { align-items: center; padding: 16px; }
+            .card { padding: 32px 24px 28px; border-radius: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+
+    <div class="brand">
+        <div class="brand-icon">💬</div>
+        <div>
+            <div class="brand-name">MyChat</div>
+            <div class="brand-tag">Real-time messaging</div>
+        </div>
+    </div>
+
+    <div class="heading">Welcome back</div>
+    <div class="subheading">Sign in with your roll number to continue.</div>
+
+    <form id="loginForm" novalidate>
+
+        <div class="field" id="field-rollNo">
+            <label for="rollNo">Roll Number</label>
+            <div class="input-wrap">
+                <span class="input-icon">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+                </span>
+                <input type="number" id="rollNo" name="rollNo" placeholder="e.g. 2301234" autocomplete="username" required>
+            </div>
+        </div>
+
+        <div class="field" id="field-password">
+            <label for="password">Password</label>
+            <div class="input-wrap">
+                <span class="input-icon">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </span>
+                <input type="password" id="password" name="password" placeholder="Your password" autocomplete="current-password" required>
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+            <span class="spinner" id="spinner"></span>
+            <span id="btnText">Sign in</span>
+        </button>
+
+    </form>
+
+    <div class="error-box" id="errorBox">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="errorText"></span>
+    </div>
+
+    <hr class="divider">
+    <div class="footer-note">Need an account? Contact your administrator.</div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const form        = document.getElementById("loginForm");
+        const rollNoInput = document.getElementById("rollNo");
+        const passInput   = document.getElementById("password");
+        const submitBtn   = document.getElementById("submitBtn");
+        const spinner     = document.getElementById("spinner");
+        const btnText     = document.getElementById("btnText");
+        const errorBox    = document.getElementById("errorBox");
+        const errorText   = document.getElementById("errorText");
+
+        // Redirect if already logged in
+        const token = localStorage.getItem("token");
+        if (token && !isTokenExpired(token)) {
+            window.location.href = "chat.html";
+            return;
+        }
+
+        function isTokenExpired(t) {
+            try {
+                const p = JSON.parse(atob(t.split('.')[1]));
+                return (p.exp * 1000) < Date.now();
+            } catch(e) { return true; }
+        }
+
+        function showError(msg) {
+            errorText.textContent = msg;
+            errorBox.classList.add('visible');
+            // shake the card
+            document.querySelector('.card').classList.remove('shake');
+            void document.querySelector('.card').offsetWidth; // reflow
+            document.querySelector('.card').classList.add('shake');
+        }
+
+        function clearError() {
+            errorBox.classList.remove('visible');
+            document.getElementById('field-rollNo').classList.remove('has-error');
+            document.getElementById('field-password').classList.remove('has-error');
+        }
+
+        function setLoading(on) {
+            submitBtn.disabled = on;
+            spinner.style.display = on ? 'block' : 'none';
+            btnText.textContent = on ? 'Signing in…' : 'Sign in';
+        }
+
+        form.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            clearError();
+
+            const rollNo   = rollNoInput.value.trim();
+            const password = passInput.value.trim();
+
+            // client-side validation
+            if (!rollNo) {
+                document.getElementById('field-rollNo').classList.add('has-error');
+                showError("Please enter your roll number.");
+                rollNoInput.focus(); return;
+            }
+            if (!password) {
+                document.getElementById('field-password').classList.add('has-error');
+                showError("Please enter your password.");
+                passInput.focus(); return;
+            }
+            if (password.length < 4) {
+                document.getElementById('field-password').classList.add('has-error');
+                showError("Password must be at least 4 characters.");
+                passInput.focus(); return;
+            }
+
+            setLoading(true);
+
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ rollNo: Number(rollNo), password })
+                });
+
+                let data;
+                try { data = await response.json(); }
+                catch { throw new Error("Invalid server response. Try again."); }
+
+                if (!response.ok) throw new Error(data.message || "Login failed.");
+
+                if (data.message === "Login successful") {
+                    localStorage.setItem("username", data.userName);
+                    if (data.token) localStorage.setItem("token", data.token);
+                    btnText.textContent = "Redirecting…";
+                    window.location.href = "chat.html";
+                } else {
+                    throw new Error(data.message || "Invalid credentials.");
+                }
+
+            } catch (error) {
+                console.error("Login error:", error);
+                showError(error.message || "Something went wrong. Please try again.");
+                setLoading(false);
+            }
+        });
+
+        // clear field error on input
+        rollNoInput.addEventListener('input', () => document.getElementById('field-rollNo').classList.remove('has-error'));
+        passInput.addEventListener('input',   () => document.getElementById('field-password').classList.remove('has-error'));
+    });
+</script>
+
+</body>
+</html>
